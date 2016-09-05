@@ -256,11 +256,11 @@ if [ ${STEP11} ]; then
       arm-vita-eabi-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_obj || true
   done
 
-  for target_lib in `find ${VITASDKROOT}/lib/gcc/arm-vita-eabi/4.9.4 -name \*.a` ; do
+  for target_lib in `find ${VITASDKROOT}/lib/gcc/arm-vita-eabi/${GCC_VERSION} -name \*.a` ; do
       arm-vita-eabi-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_lib || true
   done
 
-  for target_obj in `find ${VITASDKROOT}/lib/gcc/arm-vita-eabi/4.9.4 -name \*.o` ; do
+  for target_obj in `find ${VITASDKROOT}/lib/gcc/arm-vita-eabi/${GCC_VERSION} -name \*.o` ; do
       arm-vita-eabi-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_obj || true
   done
 fi
