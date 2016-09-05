@@ -61,7 +61,7 @@ if [ ${STEP0} ]; then
   echo "[Step 0] Build zlib..."
   cd ${DOWNLOADDIR}
   if [ ! -f zlib-${ZLIB_VERSION}.tar.xz ]; then
-    curl -L -O - http://zlib.net/zlib-${ZLIB_VERSION}.tar.xz
+    curl -L -O http://zlib.net/zlib-${ZLIB_VERSION}.tar.xz
   fi
   tar xJf zlib-${ZLIB_VERSION}.tar.xz -C ${SRCDIR}
   cd ${SRCDIR}/zlib-${ZLIB_VERSION}
