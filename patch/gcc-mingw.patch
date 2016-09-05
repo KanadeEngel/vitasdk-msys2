@@ -1,40 +1,27 @@
-diff -urN gcc-4.8.2.orig/libiberty/lrealpath.c gcc-4.8.2/libiberty/lrealpath.c
---- gcc-4.8.2.orig/libiberty/lrealpath.c	2013-12-21 20:21:26.446076700 +0000
-+++ gcc-4.8.2/libiberty/lrealpath.c	2013-12-22 02:56:54.800559500 +0000
-@@ -138,15 +138,26 @@
-   {
-     char buf[MAX_PATH];
-     char* basename;
-+    char* slash;
-     DWORD len = GetFullPathName (filename, MAX_PATH, buf, &basename);
-     if (len == 0 || len > MAX_PATH - 1)
-       return strdup (filename);
-     else
-       {
--	/* The file system is case-preserving but case-insensitive,
--	   Canonicalize to lowercase, using the codepage associated
--	   with the process locale.  */
--        CharLowerBuff (buf, len);
-+	/* Turn all back slashes back back into forward slashes
-+	   and don't make it all lowercase.
-+	   Rationale:
-+	   Windows is as happy with / as it is with \. This will
-+	   have been built using Cygwin, MSYS* or cross-compiled
-+	   from a system where dirsep is / so it is cleaner just
-+	   to keep the dirseps as / (and the case un-modified).
-+	   This way, the value will be consistent with the build
-+	   system and string operations (be they internal to this
-+	   software or external to it, e.g. processing map files
-+	   with sed) work as expected.  */
-+	slash = buf;
-+	while ((slash = strchr(slash,'\\')) !=  NULL)
-+	  *slash = '/';
-         return strdup (buf);
-       }
-   }
-diff -urN gcc-4.8.2.orig/libcpp/files.c gcc-4.8.2/libcpp/files.c
---- gcc-4.8.2.orig/libcpp/files.c	2013-03-06 16:18:40.000000000 +0000
-+++ gcc-4.8.2/libcpp/files.c	2013-12-23 13:38:19.780368200 +0000
+diff -ur gcc-6.2.0-orig/gcc/configure gcc-6.2.0/gcc/configure
+--- gcc-6.2.0-orig/gcc/configure	2016-06-08 21:34:25.000000000 +0800
++++ gcc-6.2.0/gcc/configure	2016-09-05 12:37:56.382240300 +0800
+@@ -9740,17 +9740,6 @@
+ 
+ fi
+ 
+-ac_fn_cxx_check_type "$LINENO" "caddr_t" "ac_cv_type_caddr_t" "$ac_includes_default"
+-if test "x$ac_cv_type_caddr_t" = x""yes; then :
+-
+-else
+-
+-cat >>confdefs.h <<_ACEOF
+-#define caddr_t char *
+-_ACEOF
+-
+-fi
+-
+ 
+ 
+ ac_fn_cxx_check_header_preproc "$LINENO" "sys/mman.h" "ac_cv_header_sys_mman_h"
+diff -ur gcc-6.2.0-orig/libcpp/files.c gcc-6.2.0/libcpp/files.c
+--- gcc-6.2.0-orig/libcpp/files.c	2016-01-29 06:35:20.000000000 +0800
++++ gcc-6.2.0/libcpp/files.c	2016-09-05 12:37:10.333827900 +0800
 @@ -30,6 +30,13 @@
  #include "md5.h"
  #include <dirent.h>
@@ -143,24 +130,37 @@ diff -urN gcc-4.8.2.orig/libcpp/files.c gcc-4.8.2/libcpp/files.c
  
    if (file->fd != -1)
      {
-diff -ru gcc-4.8.2.orig/gcc/configure gcc-4.8.2/gcc/configure
---- gcc-4.8.2.orig/gcc/configure	2016-05-22 16:53:32.000000000 +0800
-+++ gcc-4.8.2/gcc/configure	2016-09-04 20:20:26.590637700 +0800
-@@ -9255,17 +9255,6 @@
- 
- fi
- 
--ac_fn_c_check_type "$LINENO" "caddr_t" "ac_cv_type_caddr_t" "$ac_includes_default"
--if test "x$ac_cv_type_caddr_t" = x""yes; then :
--
--else
--
--cat >>confdefs.h <<_ACEOF
--#define caddr_t char *
--_ACEOF
--
--fi
--
- 
- 
- ac_fn_c_check_header_preproc "$LINENO" "sys/mman.h" "ac_cv_header_sys_mman_h"
+diff -ur gcc-6.2.0-orig/libiberty/lrealpath.c gcc-6.2.0/libiberty/lrealpath.c
+--- gcc-6.2.0-orig/libiberty/lrealpath.c	2005-05-25 04:48:25.000000000 +0800
++++ gcc-6.2.0/libiberty/lrealpath.c	2016-09-05 12:37:10.327810700 +0800
+@@ -138,15 +138,26 @@
+   {
+     char buf[MAX_PATH];
+     char* basename;
++    char* slash;
+     DWORD len = GetFullPathName (filename, MAX_PATH, buf, &basename);
+     if (len == 0 || len > MAX_PATH - 1)
+       return strdup (filename);
+     else
+       {
+-	/* The file system is case-preserving but case-insensitive,
+-	   Canonicalize to lowercase, using the codepage associated
+-	   with the process locale.  */
+-        CharLowerBuff (buf, len);
++	/* Turn all back slashes back back into forward slashes
++	   and don't make it all lowercase.
++	   Rationale:
++	   Windows is as happy with / as it is with \. This will
++	   have been built using Cygwin, MSYS* or cross-compiled
++	   from a system where dirsep is / so it is cleaner just
++	   to keep the dirseps as / (and the case un-modified).
++	   This way, the value will be consistent with the build
++	   system and string operations (be they internal to this
++	   software or external to it, e.g. processing map files
++	   with sed) work as expected.  */
++	slash = buf;
++	while ((slash = strchr(slash,'\\')) !=  NULL)
++	  *slash = '/';
+         return strdup (buf);
+       }
+   }
