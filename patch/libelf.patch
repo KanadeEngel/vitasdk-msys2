@@ -1,6 +1,6 @@
-diff -ru a/src/libelf-0.8.13/configure b/src/libelf-0.8.13/configure
---- a/src/libelf-0.8.13/configure	2015-08-19 18:51:37.000000000 +0400
-+++ b/src/libelf-0.8.13/configure	2015-09-22 20:37:30.000000000 +0400
+diff -ru libelf-0.8.13-orig/configure libelf-0.8.13/configure
+--- libelf-0.8.13-orig/configure	2015-08-19 18:51:37.000000000 +0400
++++ libelf-0.8.13/configure	2015-09-22 20:37:30.000000000 +0400
 @@ -1595,7 +1595,7 @@
    echo $ac_n "(cached) $ac_c" 1>&6
  else

@@ -90,7 +90,7 @@ if [ ${STEP2} ]; then
   fi
   tar xzf libelf-${LIBELF_VERSION}.tar.gz -C ${SRCDIR}
   cd ${SRCDIR}/libelf-${LIBELF_VERSION}
-  patch -p3 < ${PATCHDIR}/libelf.patch
+  patch -p1 < ${PATCHDIR}/libelf.patch
   rm -rf ${BUILDDIR}/libelf-${LIBELF_VERSION}
   mkdir -p ${BUILDDIR}/libelf-${LIBELF_VERSION}
   cd ${BUILDDIR}/libelf-${LIBELF_VERSION}
@@ -148,7 +148,7 @@ if [ ${STEP6} ]; then
   fi
   tar xjf binutils-${BINUTILS_VERSION}.tar.bz2 -C ${SRCDIR}
   cd ${SRCDIR}/binutils-${BINUTILS_VERSION}
-  patch -p3 < ${PATCHDIR}/binutils.patch
+  patch -p1 < ${PATCHDIR}/binutils.patch
   patch -p1 < ${PATCHDIR}/binutils-mingw.patch
   rm -rf ${BUILDDIR}/binutils-${BINUTILS_VERSION}
   mkdir -p ${BUILDDIR}/binutils-${BINUTILS_VERSION}
@@ -171,7 +171,7 @@ if [ ${STEP7} ]; then
     cd ${SRCDIR}/gcc-${GCC_VERSION}
     ./contrib/download_prerequisites
   fi
-  patch -p3 < ${PATCHDIR}/gcc.patch
+  patch -p1 < ${PATCHDIR}/gcc.patch
   patch -p1 < ${PATCHDIR}/gcc-mingw.patch
   rm -rf ${BUILDDIR}/gcc-${GCC_VERSION}
   mkdir -p ${BUILDDIR}/gcc-${GCC_VERSION}
