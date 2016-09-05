@@ -10,8 +10,8 @@ GCC_VERSION=4.9.4
 
 JOBS=-j4
 
-ROOTDIR=$(pwd)
-PATCHDIR=$(pwd)/patch
+ROOTDIR=$(realpath `dirname $0`)
+PATCHDIR=${ROOTDIR}/patch
 DOWNLOADDIR=${ROOTDIR}/download
 SRCDIR=${ROOTDIR}/src
 BUILDDIR=${ROOTDIR}/build
