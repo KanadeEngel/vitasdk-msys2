@@ -20,7 +20,7 @@ diff -ur gcc-6.2.0-orig/gcc/gcc.c gcc-6.2.0/gcc/gcc.c
 +#undef LIB_SPEC
  #ifndef LIB_SPEC
 -#define LIB_SPEC "%{!shared:%{g*:-lg} %{!p:%{!pg:-lc}}%{p:-lc_p}%{pg:-lc_p}}"
-+#define LIB_SPEC "%{!shared:%{g*:-lg} %{!p:%{!pg:-lc}}%{p:-lc_p}%{pg:-lc_p}} -lSceRtc_stub -lSceKernel_stub"
++#define LIB_SPEC "%{!shared:%{g*:-lg} %{!p:%{!pg:-lc}}%{p:-lc_p}%{pg:-lc_p}} -lSceRtc_stub -lSceKernel_stub -lSceNet_stub"
  #endif
  
  /* When using -fsplit-stack we need to wrap pthread_create, in order
