@@ -4,33 +4,27 @@ if [ $# -gt 0 ]; then
   while test $# -gt 0
   do
     case "$1" in
-      --help) (echo "Supported steps: zlib libzip libelf jansson toolchain dlfcn binutils gcc headers newlib pthread gcc-final strip"; exit 1)
+      --help) (echo "Supported steps: gcc-deps toolchain-deps toolchain dlfcn binutils gcc headers newlib pthread gcc-final strip"; exit 1)
         ;;
-      zlib) STEP0=true
+      gcc-deps) STEP1=true
         ;;
-      libzip) STEP1=true
+      toolchain-deps) STEP2=true
         ;;
-      libelf) STEP2=true
+      toolchain) STEP3=true
         ;;
-      jansson) STEP3=true
+      binutils) STEP4=true
         ;;
-      toolchain) STEP4=true
+      gcc) STEP5=true
         ;;
-      dlfcn) STEP5=true
+      headers) STEP6=true
         ;;
-      binutils) STEP6=true
+      newlib) STEP7=true
         ;;
-      gcc) STEP7=true
+      pthread) STEP8=true
         ;;
-      headers) STEP8=true
+      gcc-final) STEP9=true
         ;;
-      newlib) STEP9=true
-        ;;
-      pthread) STEP10=true
-        ;;
-      gcc-final) STEP11=true
-        ;;
-      strip) STEP12=true
+      strip) STEP10=true
         ;;
       *) (echo "Unsupported $1"; exit 1)
         ;;
@@ -38,7 +32,6 @@ if [ $# -gt 0 ]; then
     shift
   done
 else
-  STEP0=true
   STEP1=true
   STEP2=true
   STEP3=true
@@ -49,8 +42,6 @@ else
   STEP8=true
   STEP9=true
   STEP10=true
-  STEP11=true
-  STEP12=true
 fi
 
 . ./build-common.sh
@@ -60,8 +51,88 @@ set -o pipefail
 
 mkdir -p ${DOWNLOADDIR} ${SRCDIR} ${BUILDDIR} ${INSTALLDIR}
 
-if [ ${STEP0} ]; then
-  echo "[Step 0] Build zlib..."
+if [ ${STEP1} ]; then
+  echo "[Step 1.1] Build libiconv..."
+  cd ${DOWNLOADDIR}
+  if [ ! -f libiconv-${LIBICONV_VERSION}.tar.gz ]; then
+	curl -L -O http://ftp.gnu.org/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz
+  fi
+  tar xzf libiconv-${LIBICONV_VERSION}.tar.gz -C ${SRCDIR}
+  rm -rf ${BUILDDIR}/libiconv-${LIBICONV_VERSION}
+  mkdir -p ${BUILDDIR}/libiconv-${LIBICONV_VERSION}
+  cd ${BUILDDIR}/libiconv-${LIBICONV_VERSION}
+  ../${SRCRELDIR}/libiconv-${LIBICONV_VERSION}/configure --build=${HOST_NATIVE} --host=${HOST_NATIVE} --prefix=${INSTALLDIR} --disable-shared --disable-nls
+  make ${JOBS}
+  make install
+
+  echo "[Step 1.2] Build GMP..."
+  cd ${DOWNLOADDIR}
+  if [ ! -f gmp-${GMP_VERSION}.tar.xz ]; then
+	curl -L -O http://ftp.gnu.org/gnu/gmp/gmp-${GMP_VERSION}.tar.xz
+  fi
+  tar xJf gmp-${GMP_VERSION}.tar.xz -C ${SRCDIR}
+  rm -rf ${BUILDDIR}/gmp-${GMP_VERSION}
+  mkdir -p ${BUILDDIR}/gmp-${GMP_VERSION}
+  cd ${BUILDDIR}/gmp-${GMP_VERSION}
+  ../${SRCRELDIR}/gmp-${GMP_VERSION}/configure --build=${HOST_NATIVE} --host=${HOST_NATIVE} --prefix=${INSTALLDIR} --disable-shared --enable-cxx
+  make ${JOBS}
+  make install
+
+  echo "[Step 1.3] Build MPFR..."
+  cd ${DOWNLOADDIR}
+  if [ ! -f mpfr-${MPFR_VERSION}.tar.xz ]; then
+	curl -L -O http://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VERSION}.tar.xz
+  fi
+  tar xJf mpfr-${MPFR_VERSION}.tar.xz -C ${SRCDIR}
+  rm -rf ${BUILDDIR}/mpfr-${MPFR_VERSION}
+  mkdir -p ${BUILDDIR}/mpfr-${MPFR_VERSION}
+  cd ${BUILDDIR}/mpfr-${MPFR_VERSION}
+  ../${SRCRELDIR}/mpfr-${MPFR_VERSION}/configure --build=${HOST_NATIVE} --host=${HOST_NATIVE} --prefix=${INSTALLDIR} --disable-shared --with-gmp=${INSTALLDIR}
+  make ${JOBS}
+  make install
+
+  echo "[Step 1.4] Build MPC..."
+  cd ${DOWNLOADDIR}
+  if [ ! -f mpc-${MPC_VERSION}.tar.gz ]; then
+	curl -L -O http://ftp.gnu.org/gnu/mpc/mpc-${MPC_VERSION}.tar.gz
+  fi
+  tar xzf mpc-${MPC_VERSION}.tar.gz -C ${SRCDIR}
+  rm -rf ${BUILDDIR}/mpc-${MPC_VERSION}
+  mkdir -p ${BUILDDIR}/mpc-${MPC_VERSION}
+  cd ${BUILDDIR}/mpc-${MPC_VERSION}
+  ../${SRCRELDIR}/mpc-${MPC_VERSION}/configure --build=${HOST_NATIVE} --host=${HOST_NATIVE} --prefix=${INSTALLDIR} --disable-shared --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR}
+  make ${JOBS}
+  make install
+
+  echo "[Step 1.5] Build ISL..."
+  cd ${DOWNLOADDIR}
+  if [ ! -f isl-${ISL_VERSION}.tar.xz ]; then
+	curl -L -O http://isl.gforge.inria.fr/isl-${ISL_VERSION}.tar.xz
+  fi
+  tar xJf isl-${ISL_VERSION}.tar.xz -C ${SRCDIR}
+  rm -rf ${BUILDDIR}/isl-${ISL_VERSION}
+  mkdir -p ${BUILDDIR}/isl-${ISL_VERSION}
+  cd ${BUILDDIR}/isl-${ISL_VERSION}
+  ../${SRCRELDIR}/isl-${ISL_VERSION}/configure --build=${HOST_NATIVE} --host=${HOST_NATIVE} --prefix=${INSTALLDIR} --disable-shared --with-gmp-prefix=${INSTALLDIR}
+  make ${JOBS}
+  make install
+
+  echo "[Step 1.6] Build CLooG..."
+  cd ${DOWNLOADDIR}
+  if [ ! -f cloog-${CLOOG_VERSION}.tar.gz ]; then
+	curl -L -O http://www.bastoul.net/cloog/pages/download/cloog-${CLOOG_VERSION}.tar.gz
+  fi
+  tar xzf cloog-${CLOOG_VERSION}.tar.gz -C ${SRCDIR}
+  rm -rf ${BUILDDIR}/cloog-${CLOOG_VERSION}
+  mkdir -p ${BUILDDIR}/cloog-${CLOOG_VERSION}
+  cd ${BUILDDIR}/cloog-${CLOOG_VERSION}
+  ../${SRCRELDIR}/cloog-${CLOOG_VERSION}/configure --build=${HOST_NATIVE} --host=${HOST_NATIVE} --prefix=${INSTALLDIR} --disable-shared --with-bits=gmp --with-host-libstdcxx='-lstdc++' --with-gmp-prefix=${INSTALLDIR} --with-isl-prefix=${INSTALLDIR}
+  make ${JOBS}
+  make install
+fi
+
+if [ ${STEP2} ]; then
+  echo "[Step 2.1] Build zlib..."
   cd ${DOWNLOADDIR}
   if [ ! -f zlib-${ZLIB_VERSION}.tar.xz ]; then
     curl -L -O http://zlib.net/zlib-${ZLIB_VERSION}.tar.xz
@@ -69,10 +140,8 @@ if [ ${STEP0} ]; then
   tar xJf zlib-${ZLIB_VERSION}.tar.xz -C ${SRCDIR}
   cd ${SRCDIR}/zlib-${ZLIB_VERSION}
   BINARY_PATH=${INSTALLDIR}/bin INCLUDE_PATH=${INSTALLDIR}/include LIBRARY_PATH=${INSTALLDIR}/lib make -f win32/Makefile.gcc ${JOBS} install
-fi
 
-if [ ${STEP1} ]; then
-  echo "[Step 1] Build libzip..."
+  echo "[Step 2.2] Build libzip..."
   cd ${DOWNLOADDIR}
   if [ ! -f libzip-${LIBZIP_VERSION}.tar.xz ]; then
     curl -L -O https://nih.at/libzip/libzip-${LIBZIP_VERSION}.tar.xz
@@ -81,12 +150,10 @@ if [ ${STEP1} ]; then
   rm -rf ${BUILDDIR}/libzip-${LIBZIP_VERSION}
   mkdir -p ${BUILDDIR}/libzip-${LIBZIP_VERSION}
   cd ${BUILDDIR}/libzip-${LIBZIP_VERSION}
-  CFLAGS='-DZIP_STATIC' ${SRCDIR}/libzip-${LIBZIP_VERSION}/configure --host=i686-w64-mingw32 --prefix=$INSTALLDIR --disable-shared --enable-static
+  CFLAGS='-DZIP_STATIC' ${SRCDIR}/libzip-${LIBZIP_VERSION}/configure --host=${HOST_NATIVE} --prefix=$INSTALLDIR --disable-shared --enable-static
   make ${JOBS} -C lib install
-fi
 
-if [ ${STEP2} ]; then
-  echo "[Step 2] Build libelf..."
+  echo "[Step 2.3] Build libelf..."
   cd ${DOWNLOADDIR}
   if [ ! -f libelf-${LIBELF_VERSION}.tar.gz ]; then
     curl -L -O http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz
@@ -97,12 +164,10 @@ if [ ${STEP2} ]; then
   rm -rf ${BUILDDIR}/libelf-${LIBELF_VERSION}
   mkdir -p ${BUILDDIR}/libelf-${LIBELF_VERSION}
   cd ${BUILDDIR}/libelf-${LIBELF_VERSION}
-  ../${SRCRELDIR}/libelf-${LIBELF_VERSION}/configure --host=i686-w64-mingw32 --prefix=$INSTALLDIR
+  ../${SRCRELDIR}/libelf-${LIBELF_VERSION}/configure --host=${HOST_NATIVE} --prefix=$INSTALLDIR
   make ${JOBS} install
-fi
 
-if [ ${STEP3} ]; then
-  echo "[Step 3] Build jansson..."
+  echo "[Step 2.4] Build jansson..."
   cd ${DOWNLOADDIR}
   if [ ! -f jansson-${JANSSON_VERSION}.tar.gz ]; then
     curl -L -o jansson-${JANSSON_VERSION}.tar.gz https://github.com/akheron/jansson/archive/v${JANSSON_VERSION}.tar.gz
@@ -113,10 +178,21 @@ if [ ${STEP3} ]; then
   cd ${BUILDDIR}/jansson-${JANSSON_VERSION}
   cmake -G"Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$INSTALLDIR -DCMAKE_BUILD_TYPE=Release -DJANSSON_BUILD_DOCS=OFF ${SRCDIR}/jansson-${JANSSON_VERSION}
   make ${JOBS} install
+
+  echo "[Step 2.5] Build dlfcn-win32..."
+  cd ${DOWNLOADDIR}
+  if [ ! -f dlfcn-${DLFCN_VERSION}.tar.gz ]; then
+    curl -L -o dlfcn-${DLFCN_VERSION}.tar.gz https://github.com/dlfcn-win32/dlfcn-win32/archive/v${DLFCN_VERSION}.tar.gz
+  fi
+  tar xzf dlfcn-${DLFCN_VERSION}.tar.gz -C ${SRCDIR}
+  cd ${SRCDIR}/dlfcn-win32-${DLFCN_VERSION}
+  ./configure --prefix=${INSTALLDIR}
+  make
+  make install
 fi
 
-if [ ${STEP4} ]; then
-  echo "[Step 4] Build vita-toolchain..."
+if [ ${STEP3} ]; then
+  echo "[Step 3] Build vita-toolchain..."
   if [ ! -d ${SRCDIR}/vita-toolchain/.git ]; then
     rm -rf ${SRCDIR}/vita-toolchain
     git clone https://github.com/vitasdk/vita-toolchain ${SRCDIR}/vita-toolchain
@@ -131,21 +207,8 @@ if [ ${STEP4} ]; then
   make ${JOBS} install
 fi
 
-if [ ${STEP5} ]; then
-  echo "[Step 5] Build dlfcn-win32..."
-  cd ${DOWNLOADDIR}
-  if [ ! -f dlfcn-${DLFCN_VERSION}.tar.gz ]; then
-    curl -L -o dlfcn-${DLFCN_VERSION}.tar.gz https://github.com/dlfcn-win32/dlfcn-win32/archive/v${DLFCN_VERSION}.tar.gz
-  fi
-  tar xzf dlfcn-${DLFCN_VERSION}.tar.gz -C ${SRCDIR}
-  cd ${SRCDIR}/dlfcn-win32-${DLFCN_VERSION}
-  ./configure --prefix=$INSTALLDIR
-  make
-  make install
-fi
-
-if [ ${STEP6} ]; then
-  echo "[Step 6] Build binutils..."
+if [ ${STEP4} ]; then
+  echo "[Step 4] Build binutils..."
   cd ${DOWNLOADDIR}
   if [ ! -f binutils-${BINUTILS_VERSION}.tar.bz2 ]; then
     curl -L -O http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2
@@ -157,7 +220,7 @@ if [ ${STEP6} ]; then
   rm -rf ${BUILDDIR}/binutils-${BINUTILS_VERSION}
   mkdir -p ${BUILDDIR}/binutils-${BINUTILS_VERSION}
   cd ${BUILDDIR}/binutils-${BINUTILS_VERSION}
-  ../${SRCRELDIR}/binutils-${BINUTILS_VERSION}/configure --host=i686-w64-mingw32 --build=i686-w64-mingw32 --target=arm-vita-eabi --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --disable-nls --disable-werror --disable-sim --disable-gdb --enable-interwork --enable-plugins --with-sysroot=${VITASDKROOT}/arm-vita-eabi "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]"
+  ../${SRCRELDIR}/binutils-${BINUTILS_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --disable-nls --disable-werror --disable-sim --disable-gdb --enable-interwork --enable-plugins --with-sysroot=${VITASDKROOT}/arm-vita-eabi "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]"
   make ${JOBS}
   make install
 fi
@@ -166,29 +229,26 @@ export VITASDK=${VITASDKROOT}
 export OLDPATH=${PATH}
 export PATH=${VITASDK}/bin:${PATH}
 
-if [ ${STEP7} ]; then
-  echo "[Step 7] Build gcc first time..."
+if [ ${STEP5} ]; then
+  echo "[Step 5] Build gcc first time..."
   cd ${DOWNLOADDIR}
   if [ ! -f gcc-${GCC_VERSION}.tar.bz2 ]; then
     curl -L -O http://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2
   fi
   tar xjf gcc-${GCC_VERSION}.tar.bz2 -C ${SRCDIR}
   cd ${SRCDIR}/gcc-${GCC_VERSION}
-  if [ ! -d ${SRCDIR}/gcc-${GCC_VERSION}/isl ]; then
-    ./contrib/download_prerequisites
-  fi
   patch -p1 < ${PATCHDIR}/gcc.patch
   patch -p1 < ${PATCHDIR}/gcc-mingw.patch
   rm -rf ${BUILDDIR}/gcc-${GCC_VERSION}
   mkdir -p ${BUILDDIR}/gcc-${GCC_VERSION}
   cd ${BUILDDIR}/gcc-${GCC_VERSION}
-  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=i686-w64-mingw32 --build=i686-w64-mingw32 --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-newlib --without-headers --with-gnu-as --with-gnu-ld --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi  "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm"  "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
+  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-newlib --without-headers --with-gnu-as --with-gnu-ld --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-cloog=${INSTALLDIR} --with-libelf=${INSTALLDIR} "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm"  "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
   make ${JOBS} all-gcc
   make install-gcc
 fi
 
-if [ ${STEP8} ]; then
-  echo "[Step 8] Build vita-headers..."
+if [ ${STEP6} ]; then
+  echo "[Step 6] Build vita-headers..."
   if [ ! -d ${SRCDIR}/vita-headers/.git ]; then
     rm -rf ${SRCDIR}/vita-headers
     git clone https://github.com/vitasdk/vita-headers ${SRCDIR}/vita-headers
@@ -207,8 +267,8 @@ if [ ${STEP8} ]; then
   cp ${SRCDIR}/vita-headers/db.json ${VITASDKROOT}/share
 fi
 
-if [ ${STEP9} ]; then
-  echo "[Step 9] Build newlib..."
+if [ ${STEP7} ]; then
+  echo "[Step 7] Build newlib..."
   if [ ! -d ${SRCDIR}/newlib/.git ]; then
     rm -rf ${SRCDIR}/newlib
     git clone https://github.com/vitasdk/newlib ${SRCDIR}/newlib
@@ -219,13 +279,13 @@ if [ ${STEP9} ]; then
   rm -rf ${BUILDDIR}/newlib
   mkdir -p ${BUILDDIR}/newlib
   cd ${BUILDDIR}/newlib
-  ../${SRCRELDIR}/newlib/configure --host=i686-w64-mingw32 --build=i686-w64-mingw32 --target=arm-vita-eabi --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-newlib-io-long-long --enable-newlib-register-fini --disable-newlib-supplied-syscalls --disable-nls
+  ../${SRCRELDIR}/newlib/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-newlib-io-long-long --enable-newlib-register-fini --disable-newlib-supplied-syscalls --disable-nls
   make ${JOBS}
   make install
 fi
 
-if [ ${STEP10} ]; then
-  echo "[Step 10] Build pthread..."
+if [ ${STEP8} ]; then
+  echo "[Step 8] Build pthread..."
   if [ ! -d ${SRCDIR}/pthread-embedded/.git ]; then
     rm -rf ${SRCDIR}/pthread-embedded
     git clone https://github.com/vitasdk/pthread-embedded ${SRCDIR}/pthread-embedded
@@ -242,8 +302,18 @@ if [ ${STEP10} ]; then
   make install
 fi
 
-if [ ${STEP11} ]; then
-  echo "[Step 11] Build gcc final..."
+if [ ${STEP9} ]; then
+  echo "[Step 9] Build gcc final..."
+  if [ ! -d ${SRCDIR}/gcc-${GCC_VERSION} ]; then
+    cd ${DOWNLOADDIR}
+    if [ ! -f gcc-${GCC_VERSION}.tar.bz2 ]; then
+      curl -L -O http://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2
+    fi
+    tar xjf gcc-${GCC_VERSION}.tar.bz2 -C ${SRCDIR}
+    cd ${SRCDIR}/gcc-${GCC_VERSION}
+    patch -p1 < ${PATCHDIR}/gcc.patch
+    patch -p1 < ${PATCHDIR}/gcc-mingw.patch
+  fi
   pushd ${VITASDKROOT}/arm-vita-eabi
   mkdir -p ./usr
   cp -rf include lib usr/
@@ -251,7 +321,7 @@ if [ ${STEP11} ]; then
   rm -rf ${BUILDDIR}/gcc-${GCC_VERSION}-final
   mkdir -p ${BUILDDIR}/gcc-${GCC_VERSION}-final
   cd ${BUILDDIR}/gcc-${GCC_VERSION}-final
-  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=i686-w64-mingw32 --build=i686-w64-mingw32 --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --enable-plugins --enable-threads=posix --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-libstdcxx-verbose --disable-nls --disable-shared --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi  "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
+  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --enable-plugins --enable-threads=posix --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-libstdcxx-verbose --disable-nls --disable-shared --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-cloog=${INSTALLDIR} --with-libelf=${INSTALLDIR}  "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
   make ${JOBS} INHIBIT_LIBC_CFLAGS="-DUSE_TM_CLONE_REGISTRY=0"
   make install
 
@@ -267,8 +337,8 @@ if [ ${STEP11} ]; then
   popd
 fi
 
-if [ ${STEP12} ]; then
-  echo "[Step 12] Strip binaries..."
+if [ ${STEP10} ]; then
+  echo "[Step 10] Strip binaries..."
   strip ${VITASDKROOT}/bin/*.exe
   strip ${VITASDKROOT}/arm-vita-eabi/bin/*.exe
   strip ${VITASDKROOT}/lib/gcc/arm-vita-eabi/${GCC_VERSION}/*.exe
