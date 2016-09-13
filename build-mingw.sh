@@ -116,19 +116,6 @@ if [ ${STEP1} ]; then
   ../${SRCRELDIR}/isl-${ISL_VERSION}/configure --build=${HOST_NATIVE} --host=${HOST_NATIVE} --prefix=${INSTALLDIR} --disable-shared --with-gmp-prefix=${INSTALLDIR}
   make ${JOBS}
   make install
-
-  echo "[Step 1.6] Build CLooG..."
-  cd ${DOWNLOADDIR}
-  if [ ! -f cloog-${CLOOG_VERSION}.tar.gz ]; then
-	curl -L -O http://www.bastoul.net/cloog/pages/download/cloog-${CLOOG_VERSION}.tar.gz
-  fi
-  tar xzf cloog-${CLOOG_VERSION}.tar.gz -C ${SRCDIR}
-  rm -rf ${BUILDDIR}/cloog-${CLOOG_VERSION}
-  mkdir -p ${BUILDDIR}/cloog-${CLOOG_VERSION}
-  cd ${BUILDDIR}/cloog-${CLOOG_VERSION}
-  ../${SRCRELDIR}/cloog-${CLOOG_VERSION}/configure --build=${HOST_NATIVE} --host=${HOST_NATIVE} --prefix=${INSTALLDIR} --disable-shared --with-bits=gmp --with-host-libstdcxx='-lstdc++' --with-gmp-prefix=${INSTALLDIR} --with-isl-prefix=${INSTALLDIR}
-  make ${JOBS}
-  make install
 fi
 
 if [ ${STEP2} ]; then
@@ -242,7 +229,7 @@ if [ ${STEP5} ]; then
   rm -rf ${BUILDDIR}/gcc-${GCC_VERSION}
   mkdir -p ${BUILDDIR}/gcc-${GCC_VERSION}
   cd ${BUILDDIR}/gcc-${GCC_VERSION}
-  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-newlib --without-headers --with-gnu-as --with-gnu-ld --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-cloog=${INSTALLDIR} --with-libelf=${INSTALLDIR} "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm"  "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
+  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-newlib --without-headers --with-gnu-as --with-gnu-ld --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-libelf=${INSTALLDIR} "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm"  "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
   make ${JOBS} all-gcc
   make install-gcc
 fi
@@ -321,7 +308,7 @@ if [ ${STEP9} ]; then
   rm -rf ${BUILDDIR}/gcc-${GCC_VERSION}-final
   mkdir -p ${BUILDDIR}/gcc-${GCC_VERSION}-final
   cd ${BUILDDIR}/gcc-${GCC_VERSION}-final
-  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --enable-plugins --enable-threads=posix --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-libstdcxx-verbose --disable-nls --disable-shared --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-cloog=${INSTALLDIR} --with-libelf=${INSTALLDIR}  "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
+  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --enable-plugins --enable-threads=posix --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-libstdcxx-verbose --disable-nls --disable-shared --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-libelf=${INSTALLDIR}  "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
   make ${JOBS} INHIBIT_LIBC_CFLAGS="-DUSE_TM_CLONE_REGISTRY=0"
   make install
 
