@@ -22,6 +22,7 @@ PATCHDIR=${ROOTDIR}/patch
 DOWNLOADDIR=${ROOTDIR}/download
 SRCDIR=${ROOTDIR}/src
 BUILDDIR=${ROOTDIR}/build
+mkdir -p ${SRCDIR} ${BUILDDIR}
 SRCRELDIR=$(realpath --relative-to="${BUILDDIR}" ${SRCDIR})
 INSTALLDIR=${ROOTDIR}/install
 VITASDKROOT=${ROOTDIR}/vitasdk
