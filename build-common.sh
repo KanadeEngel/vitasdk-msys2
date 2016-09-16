@@ -1,4 +1,4 @@
-#/usr/bin/env sh
+#!/usr/bin/env sh
 
 HOST_NATIVE=i686-w64-mingw32
 

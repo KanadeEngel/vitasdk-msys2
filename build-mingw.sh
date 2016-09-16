@@ -1,4 +1,4 @@
-#/usr/bin/env sh
+#!/usr/bin/env sh
 
 if [ $# -gt 0 ]; then
   while test $# -gt 0
