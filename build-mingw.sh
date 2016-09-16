@@ -220,7 +220,7 @@ if [ ${STEP4} ]; then
   rm -rf ${BUILDDIR}/binutils-${BINUTILS_VERSION}
   mkdir -p ${BUILDDIR}/binutils-${BINUTILS_VERSION}
   cd ${BUILDDIR}/binutils-${BINUTILS_VERSION}
-  ../${SRCRELDIR}/binutils-${BINUTILS_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --disable-nls --disable-werror --disable-sim --disable-gdb --enable-interwork --enable-plugins --with-sysroot=${VITASDKROOT}/arm-vita-eabi "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]"
+  ../${SRCRELDIR}/binutils-${BINUTILS_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --disable-nls --disable-werror --disable-sim --disable-gdb --enable-interwork --enable-plugins --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-cloog=${INSTALLDIR} --with-isl=${INSTALLDIR} --disable-isl-version-check "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]"
   make ${JOBS}
   make install
 fi
