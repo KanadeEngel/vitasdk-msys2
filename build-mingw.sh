@@ -1,30 +1,33 @@
 #!/usr/bin/env sh
 
+set -e
+set -o pipefail
+
 if [ $# -gt 0 ]; then
   while test $# -gt 0
   do
     case "$1" in
       --help) (echo "Supported steps: gcc-deps toolchain-deps toolchain dlfcn binutils gcc headers newlib pthread gcc-final strip"; exit 1)
         ;;
-      gcc-deps) STEP1=true
+      gcc-deps) STEP_GCC_DEPS=true
         ;;
-      toolchain-deps) STEP2=true
+      toolchain-deps) STEP_TOOLCHAIN_DEPS=true
         ;;
-      toolchain) STEP3=true
+      toolchain) STEP_TOOLCHAIN=true
         ;;
-      binutils) STEP4=true
+      binutils) STEP_BINUTILS=true
         ;;
-      gcc) STEP5=true
+      gcc) STEP_GCC_FIRST=true
         ;;
-      headers) STEP6=true
+      headers) STEP_HEADERS=true
         ;;
-      newlib) STEP7=true
+      newlib) STEP_NEWLIB=true
         ;;
-      pthread) STEP8=true
+      pthread) STEP_PTHREAD=true
         ;;
-      gcc-final) STEP9=true
+      gcc-final) STEP_GCC_FINAL=true
         ;;
-      strip) STEP10=true
+      strip) STEP_STRIP=true
         ;;
       *) (echo "Unsupported $1"; exit 1)
         ;;
@@ -32,26 +35,14 @@ if [ $# -gt 0 ]; then
     shift
   done
 else
-  STEP1=true
-  STEP2=true
-  STEP3=true
-  STEP4=true
-  STEP5=true
-  STEP6=true
-  STEP7=true
-  STEP8=true
-  STEP9=true
-  STEP10=true
+  STEP_ALL=true
 fi
 
 . ./build-common.sh
 
-set -e
-set -o pipefail
-
 mkdir -p ${DOWNLOADDIR} ${SRCDIR} ${BUILDDIR} ${INSTALLDIR}
 
-if [ ${STEP1} ]; then
+if [[ ${STEP_ALL} || ${STEP_GCC_DEPS} ]]; then
   echo "[Step 1.1] Build libiconv..."
   cd ${DOWNLOADDIR}
   if [ ! -f libiconv-${LIBICONV_VERSION}.tar.gz ]; then
@@ -131,7 +122,7 @@ if [ ${STEP1} ]; then
   make install
 fi
 
-if [ ${STEP2} ]; then
+if [[ ${STEP_ALL} || ${STEP_TOOLCHAIN_DEPS} ]]; then
   echo "[Step 2.1] Build zlib..."
   cd ${DOWNLOADDIR}
   if [ ! -f zlib-${ZLIB_VERSION}.tar.xz ]; then
@@ -191,7 +182,7 @@ if [ ${STEP2} ]; then
   make install
 fi
 
-if [ ${STEP3} ]; then
+if [[ ${STEP_ALL} || ${STEP_TOOLCHAIN} ]]; then
   echo "[Step 3] Build vita-toolchain..."
   if [ ! -d ${SRCDIR}/vita-toolchain/.git ]; then
     rm -rf ${SRCDIR}/vita-toolchain
@@ -207,7 +198,7 @@ if [ ${STEP3} ]; then
   make ${JOBS} install
 fi
 
-if [ ${STEP4} ]; then
+if [[ ${STEP_ALL} || ${STEP_BINUTILS} ]]; then
   echo "[Step 4] Build binutils..."
   cd ${DOWNLOADDIR}
   if [ ! -f binutils-${BINUTILS_VERSION}.tar.bz2 ]; then
@@ -229,7 +220,7 @@ export VITASDK=${VITASDKROOT}
 export OLDPATH=${PATH}
 export PATH=${VITASDK}/bin:${PATH}
 
-if [ ${STEP5} ]; then
+if [[ ${STEP_ALL} || ${STEP_GCC_FIRST} ]]; then
   echo "[Step 5] Build gcc first time..."
   cd ${DOWNLOADDIR}
   if [ ! -f gcc-${GCC_VERSION}.tar.bz2 ]; then
@@ -247,7 +238,7 @@ if [ ${STEP5} ]; then
   make install-gcc
 fi
 
-if [ ${STEP6} ]; then
+if [[ ${STEP_ALL} || ${STEP_HEADERS} ]]; then
   echo "[Step 6] Build vita-headers..."
   if [ ! -d ${SRCDIR}/vita-headers/.git ]; then
     rm -rf ${SRCDIR}/vita-headers
@@ -267,7 +258,7 @@ if [ ${STEP6} ]; then
   cp ${SRCDIR}/vita-headers/db.json ${VITASDKROOT}/share
 fi
 
-if [ ${STEP7} ]; then
+if [[ ${STEP_ALL} || ${STEP_NEWLIB} ]]; then
   echo "[Step 7] Build newlib..."
   if [ ! -d ${SRCDIR}/newlib/.git ]; then
     rm -rf ${SRCDIR}/newlib
@@ -284,7 +275,7 @@ if [ ${STEP7} ]; then
   make install
 fi
 
-if [ ${STEP8} ]; then
+if [[ ${STEP_ALL} || ${STEP_PTHREAD} ]]; then
   echo "[Step 8] Build pthread..."
   if [ ! -d ${SRCDIR}/pthread-embedded/.git ]; then
     rm -rf ${SRCDIR}/pthread-embedded
@@ -302,7 +293,7 @@ if [ ${STEP8} ]; then
   make install
 fi
 
-if [ ${STEP9} ]; then
+if [[ ${STEP_ALL} || ${STEP_GCC_FINAL} ]]; then
   echo "[Step 9] Build gcc final..."
   if [ ! -d ${SRCDIR}/gcc-${GCC_VERSION} ]; then
     cd ${DOWNLOADDIR}
@@ -337,7 +328,7 @@ if [ ${STEP9} ]; then
   popd
 fi
 
-if [ ${STEP10} ]; then
+if [[ ${STEP_ALL} || ${STEP_STRIP} ]]; then
   echo "[Step 10] Strip binaries..."
   strip ${VITASDKROOT}/bin/*.exe
   strip ${VITASDKROOT}/${HOST_TARGET}/bin/*.exe
