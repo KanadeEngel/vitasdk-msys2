@@ -195,7 +195,7 @@ if [ ${STEP3} ]; then
   echo "[Step 3] Build vita-toolchain..."
   if [ ! -d ${SRCDIR}/vita-toolchain/.git ]; then
     rm -rf ${SRCDIR}/vita-toolchain
-    git clone https://github.com/vitasdk/vita-toolchain ${SRCDIR}/vita-toolchain
+    git clone https://github.com/vitasdk/vita-toolchain -b master ${SRCDIR}/vita-toolchain
   else
     cd ${SRCDIR}/vita-toolchain
     git pull origin master
@@ -220,7 +220,7 @@ if [ ${STEP4} ]; then
   rm -rf ${BUILDDIR}/binutils-${BINUTILS_VERSION}
   mkdir -p ${BUILDDIR}/binutils-${BINUTILS_VERSION}
   cd ${BUILDDIR}/binutils-${BINUTILS_VERSION}
-  ../${SRCRELDIR}/binutils-${BINUTILS_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --disable-nls --disable-werror --disable-sim --disable-gdb --enable-interwork --enable-plugins --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-cloog=${INSTALLDIR} --with-isl=${INSTALLDIR} --disable-isl-version-check "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]"
+  ../${SRCRELDIR}/binutils-${BINUTILS_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=${HOST_TARGET} --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/info --mandir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/man --htmldir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/html --pdfdir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/pdf --disable-nls --disable-werror --disable-sim --disable-gdb --enable-interwork --enable-plugins --with-sysroot=${VITASDKROOT}/${HOST_TARGET} --with-cloog=${INSTALLDIR} --with-isl=${INSTALLDIR} --disable-isl-version-check "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]"
   make ${JOBS}
   make install
 fi
@@ -242,7 +242,7 @@ if [ ${STEP5} ]; then
   rm -rf ${BUILDDIR}/gcc-${GCC_VERSION}
   mkdir -p ${BUILDDIR}/gcc-${GCC_VERSION}
   cd ${BUILDDIR}/gcc-${GCC_VERSION}
-  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-newlib --without-headers --with-gnu-as --with-gnu-ld --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-cloog=${INSTALLDIR} --disable-isl-version-check --with-libelf=${INSTALLDIR} "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm"  "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
+  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=${HOST_TARGET} --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/info --mandir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/man --htmldir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/html --pdfdir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/pdf --enable-languages=c,c++ --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-newlib --without-headers --with-gnu-as --with-gnu-ld --with-python-dir=share/gcc-${HOST_TARGET} --with-sysroot=${VITASDKROOT}/${HOST_TARGET} --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-cloog=${INSTALLDIR} --disable-isl-version-check --with-libelf=${INSTALLDIR} "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm"  "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
   make ${JOBS} all-gcc
   make install-gcc
 fi
@@ -251,7 +251,7 @@ if [ ${STEP6} ]; then
   echo "[Step 6] Build vita-headers..."
   if [ ! -d ${SRCDIR}/vita-headers/.git ]; then
     rm -rf ${SRCDIR}/vita-headers
-    git clone https://github.com/vitasdk/vita-headers ${SRCDIR}/vita-headers
+    git clone https://github.com/vitasdk/vita-headers -b master ${SRCDIR}/vita-headers
   else
     cd ${SRCDIR}/vita-headers
     git pull origin master
@@ -260,9 +260,9 @@ if [ ${STEP6} ]; then
   mkdir -p ${BUILDDIR}/vita-headers
   cd ${BUILDDIR}/vita-headers
   vita-libs-gen ${SRCDIR}/vita-headers/db.json .
-  make ARCH=${VITASDKROOT}/bin/arm-vita-eabi ${JOBS}
-  cp *.a ${VITASDKROOT}/arm-vita-eabi/lib/
-  cp -r ${SRCDIR}/vita-headers/include ${VITASDKROOT}/arm-vita-eabi/
+  make ARCH=${VITASDKROOT}/bin/${HOST_TARGET} ${JOBS}
+  cp *.a ${VITASDKROOT}/${HOST_TARGET}/lib/
+  cp -r ${SRCDIR}/vita-headers/include ${VITASDKROOT}/${HOST_TARGET}/
   mkdir -p ${VITASDKROOT}/share
   cp ${SRCDIR}/vita-headers/db.json ${VITASDKROOT}/share
 fi
@@ -271,7 +271,7 @@ if [ ${STEP7} ]; then
   echo "[Step 7] Build newlib..."
   if [ ! -d ${SRCDIR}/newlib/.git ]; then
     rm -rf ${SRCDIR}/newlib
-    git clone https://github.com/vitasdk/newlib ${SRCDIR}/newlib
+    git clone https://github.com/vitasdk/newlib -b vita ${SRCDIR}/newlib
   else
     cd ${SRCDIR}/newlib
     git pull origin vita
@@ -279,7 +279,7 @@ if [ ${STEP7} ]; then
   rm -rf ${BUILDDIR}/newlib
   mkdir -p ${BUILDDIR}/newlib
   cd ${BUILDDIR}/newlib
-  ../${SRCRELDIR}/newlib/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-newlib-io-long-long --enable-newlib-register-fini --disable-newlib-supplied-syscalls --disable-nls
+  ../${SRCRELDIR}/newlib/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=${HOST_TARGET} --prefix=${VITASDKROOT} --infodir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/info --mandir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/man --htmldir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/html --pdfdir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/pdf --enable-newlib-io-long-long --enable-newlib-register-fini --disable-newlib-supplied-syscalls --disable-nls
   make ${JOBS}
   make install
 fi
@@ -288,7 +288,7 @@ if [ ${STEP8} ]; then
   echo "[Step 8] Build pthread..."
   if [ ! -d ${SRCDIR}/pthread-embedded/.git ]; then
     rm -rf ${SRCDIR}/pthread-embedded
-    git clone https://github.com/vitasdk/pthread-embedded ${SRCDIR}/pthread-embedded
+    git clone https://github.com/vitasdk/pthread-embedded -b master ${SRCDIR}/pthread-embedded
   else
     cd ${SRCDIR}/pthread-embedded
     git pull origin master
@@ -314,51 +314,51 @@ if [ ${STEP9} ]; then
     patch -p1 < ${PATCHDIR}/gcc.patch
     patch -p1 < ${PATCHDIR}/gcc-mingw.patch
   fi
-  pushd ${VITASDKROOT}/arm-vita-eabi
+  pushd ${VITASDKROOT}/${HOST_TARGET}
   mkdir -p ./usr
   cp -rf include lib usr/
   popd
   rm -rf ${BUILDDIR}/gcc-${GCC_VERSION}-final
   mkdir -p ${BUILDDIR}/gcc-${GCC_VERSION}-final
   cd ${BUILDDIR}/gcc-${GCC_VERSION}-final
-  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=arm-vita-eabi --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/info --mandir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/man --htmldir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/html --pdfdir=${VITASDKROOT}/share/doc/gcc-arm-vita-eabi/pdf --enable-languages=c,c++ --enable-plugins --enable-threads=posix --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-libstdcxx-verbose --disable-nls --disable-shared --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-vita-eabi --with-sysroot=${VITASDKROOT}/arm-vita-eabi --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-cloog=${INSTALLDIR} --disable-isl-version-check --with-libelf=${INSTALLDIR}  "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
+  ../${SRCRELDIR}/gcc-${GCC_VERSION}/configure --host=${HOST_NATIVE} --build=${HOST_NATIVE} --target=${HOST_TARGET} --prefix=${VITASDKROOT} --libexecdir=${VITASDKROOT}/lib --infodir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/info --mandir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/man --htmldir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/html --pdfdir=${VITASDKROOT}/share/doc/gcc-${HOST_TARGET}/pdf --enable-languages=c,c++ --enable-plugins --enable-threads=posix --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-libstdcxx-verbose --disable-nls --disable-shared --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-${HOST_TARGET} --with-sysroot=${VITASDKROOT}/${HOST_TARGET} --with-libiconv-prefix=${INSTALLDIR} --with-gmp=${INSTALLDIR} --with-mpfr=${INSTALLDIR} --with-mpc=${INSTALLDIR} --with-isl=${INSTALLDIR} --with-cloog=${INSTALLDIR} --disable-isl-version-check --with-libelf=${INSTALLDIR}  "--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm" "--with-pkgversion=GNU Tools for ARM Embedded Processors [VitaSDK for MSYS2 by Soar Qin]" --disable-multilib --with-arch=armv7-a --with-tune=cortex-a9 --with-fpu=neon --with-float=hard --with-mode=thumb
   make ${JOBS} INHIBIT_LIBC_CFLAGS="-DUSE_TM_CLONE_REGISTRY=0"
   make install
 
   pushd ${VITASDKROOT}
-  rm -rf bin/arm-vita-eabi-gccbug
-  LIBIBERTY_LIBRARIES=`find ${VITASDKROOT}/arm-vita-eabi/lib -name libiberty.a`
+  rm -rf bin/${HOST_TARGET}-gccbug
+  LIBIBERTY_LIBRARIES=`find ${VITASDKROOT}/${HOST_TARGET}/lib -name libiberty.a`
   for libiberty_lib in $LIBIBERTY_LIBRARIES ; do
       rm -rf $libiberty_lib
   done
   rm -rf ./lib/libiberty.a
   rmdir include
-  rm -rf ./arm-vita-eabi/usr
+  rm -rf ./${HOST_TARGET}/usr
   popd
 fi
 
 if [ ${STEP10} ]; then
   echo "[Step 10] Strip binaries..."
   strip ${VITASDKROOT}/bin/*.exe
-  strip ${VITASDKROOT}/arm-vita-eabi/bin/*.exe
-  strip ${VITASDKROOT}/lib/gcc/arm-vita-eabi/${GCC_VERSION}/*.exe
+  strip ${VITASDKROOT}/${HOST_TARGET}/bin/*.exe
+  strip ${VITASDKROOT}/lib/gcc/${HOST_TARGET}/${GCC_VERSION}/*.exe
 
   find ${VITASDKROOT} -name '*.la' -exec rm '{}' ';'
 
-  for target_lib in `find ${VITASDKROOT}/arm-vita-eabi/lib -name \*.a` ; do
-      arm-vita-eabi-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_lib || true
+  for target_lib in `find ${VITASDKROOT}/${HOST_TARGET}/lib -name \*.a` ; do
+      ${HOST_TARGET}-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_lib || true
   done
 
-  for target_obj in `find ${VITASDKROOT}/arm-vita-eabi/lib -name \*.o` ; do
-      arm-vita-eabi-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_obj || true
+  for target_obj in `find ${VITASDKROOT}/${HOST_TARGET}/lib -name \*.o` ; do
+      ${HOST_TARGET}-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_obj || true
   done
 
-  for target_lib in `find ${VITASDKROOT}/lib/gcc/arm-vita-eabi/${GCC_VERSION} -name \*.a` ; do
-      arm-vita-eabi-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_lib || true
+  for target_lib in `find ${VITASDKROOT}/lib/gcc/${HOST_TARGET}/${GCC_VERSION} -name \*.a` ; do
+      ${HOST_TARGET}-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_lib || true
   done
 
-  for target_obj in `find ${VITASDKROOT}/lib/gcc/arm-vita-eabi/${GCC_VERSION} -name \*.o` ; do
-      arm-vita-eabi-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_obj || true
+  for target_obj in `find ${VITASDKROOT}/lib/gcc/${HOST_TARGET}/${GCC_VERSION} -name \*.o` ; do
+      ${HOST_TARGET}-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line -R .debug_str -R .debug_ranges -R .debug_loc $target_obj || true
   done
 fi
 
