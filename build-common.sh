@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 HOST_NATIVE=i686-w64-mingw32
+HOST_TARGET=arm-vita-eabi
 
 LIBICONV_VERSION=1.14
 GMP_VERSION=6.1.1
